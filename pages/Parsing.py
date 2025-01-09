@@ -420,11 +420,6 @@ today = datetime.now()
 today = datetime(today.year, today.month, today.day)
 
 st.sidebar.title("Date Filter")
-# past_start_date = today - timedelta(days=7)
-# # past_start_date = datetime(2024, 1, 1)
-# past_end_date = today - timedelta(days=1)
-# future_start_date = today
-# future_end_date = today + timedelta(days=7)
 
 past_start_date = st.sidebar.date_input("Past Start Date", today - timedelta(days=7))
 past_start_date_time = datetime.combine(past_start_date, datetime.min.time())
@@ -434,12 +429,6 @@ past_end_date_time = datetime.combine(past_end_date, datetime.min.time())
 
 future_end_date = st.sidebar.date_input("Future End Date", datetime.now().date() + timedelta(days=7))
 future_end_date_time = datetime.combine(future_end_date, datetime.min.time())
-
-# st.info(f'old version: {today - timedelta(days=7)}')
-# st.info(f'new_old version: {datetime.now().date() - timedelta(days=7)}')
-# st.info(f'new version: {past_end_date_time}')
-# start_date = st.date_input("Start Date", past_start_date)
-# end_date = st.date_input("End Date", today)
 
 if parse_past:
     st.info("Parsing past week's weather data...")
@@ -464,85 +453,3 @@ if parse_future:
         st.warning(f"{len(failed_stations)} stations failed to parse:")
         failed_df = pd.DataFrame(failed_stations, columns=['Station ID', 'Station Name', 'Error'])
         st.write(failed_df)
-#
-# # 데이터베이스 뷰어
-# st.sidebar.title("Database Viewer")
-# view_past_db = st.sidebar.button("View Past Weather Data")
-# view_future_db = st.sidebar.button("View Future Weather Data")
-#
-# # 날짜 입력 필터
-# with st.sidebar:
-#     st.write("Filter by Date:")
-#     start_date = st.date_input("Start Date", past_start_date)
-#     end_date = st.date_input("End Date", today)
-#
-# # DB 데이터 확인
-# if view_past_db:
-#     st.header("Past Weather Data")
-#     st.info("Fetching data from AWS RDS...")
-#     with st.spinner("Loading data..."):
-#         past_weather = fetch_from_db_with_date(db_conn, past_table_name, start_date, end_date)
-#         # past_weather = fetch_from_db(past_conn, past_table_name)
-#     if not past_weather.empty:
-#         st.write(past_weather)
-#     else:
-#         st.warning("No data found for the selected date range.")
-#
-# if view_future_db:
-#     st.header("Future Weather Data")
-#     with st.spinner("Loading data..."):
-#         future_weather = fetch_from_db_with_date(db_conn, future_table_name, start_date, end_date)
-#         # future_weather = fetch_from_db(future_conn, future_table_name)
-#     if not future_weather.empty:
-#         st.write(future_weather)
-#     else:
-#         st.warning("No data found for the selected date range.")
-#
-# # CSV 업로드
-# st.sidebar.title("Upload CSV to Database")
-# uploaded_file = st.sidebar.file_uploader("Choose a CSV file", type="csv")
-#
-# # 테이블 선택
-# table_option = st.sidebar.radio("Select the Database Table", ["Past Weather Data", "Future Weather Data"])
-#
-# if uploaded_file:
-#     # CSV 파일 읽기
-#     try:
-#         uploaded_data = pd.read_csv(uploaded_file, low_memory=False)
-#         st.write("Uploaded CSV Preview:")
-#         st.write(uploaded_data.head())
-#
-#         # 테이블 선택에 따라 DB와 테이블 이름 설정
-#         if table_option == "Past Weather Data":
-#             conn = db_conn
-#             table_name = past_table_name
-#         else:
-#             conn = db_conn
-#             table_name = future_table_name
-#
-#         # 데이터 삽입 버튼
-#         if st.button("Insert Data into Database"):
-#
-#             uploaded_data['Date'] = uploaded_data['Date'].astype(str)
-#             if 'Station ID' in uploaded_data:
-#                 uploaded_data.rename(columns={'Station ID': 'Station_ID'}, inplace=True)
-#             if 'Station Name' in uploaded_data:
-#                 uploaded_data.rename(columns={'Station Name': 'Station_Name'}, inplace=True)
-#             if 'wdir' in uploaded_data:
-#                 uploaded_data.rename(columns={'wdir': 'avg_wdir'}, inplace=True)
-#
-#             uploaded_data = uploaded_data[[
-#                 'Station_ID', 'Station_Name', 'Country', 'Region', 'WMO', 'ICAO', 'Latitude', 'Longitude', 'Elevation',
-#                 'Timezone', 'Date', 'tavg', 'tmin', 'tmax', 'prcp', 'snow', 'avg_wdir', 'wspd', 'pres', 'tsun',
-#                 'avg_rhum', 'avg_dwpt'
-#             ]]
-#             with st.spinner("Inserting data into the database..."):
-#                 inserted_count, updated_count = insert_data_from_csv(conn, table_name, uploaded_data)
-#             st.success(f"Data inserted successfully: {inserted_count} rows inserted, {updated_count} rows updated!")
-#
-#     except Exception as e:
-#         st.error(f"Error reading CSV file: {e}")
-#
-
-# Close DB connections
-# db_conn.close()
